@@ -1,7 +1,7 @@
 import * as openpgp from "openpgp";
 import * as AWS from "aws-sdk";
 import stream from "stream";
-import * as fs from 'fs'
+import * as fs from "fs";
 /**
  *
  * Author: Eric Marcantonio
@@ -53,7 +53,7 @@ export async function decryptSecretWithPrivate(encryptedSecret: string, privateK
  * @param secret the secret used to symmetrically encrypt this file
  * @returns a NodeStream with the PGP encrypted payload in it
  */
-export async function encryptFileSym(fileBuffer: fs.ReadStream, secret: string) {
+export async function encryptFileSym(fileBuffer: stream.Readable, secret: string) {
     const message = await openpgp.createMessage({ binary: fileBuffer });
     return await openpgp.encrypt({
         message, // input as Message object
@@ -105,27 +105,10 @@ export async function encryptStreamToNewStream(
     secret: string,
     publicKey: string
 ) {
-    return new Promise<void>(async function (resolve, reject) {
-        let encryptedSecret = await encryptSecretWithPublic(secret, publicKey);
-        keyWriteStream.write(encryptedSecret);
-        keyWriteStream.on("finish", async function () {
-            //@ts-ignore
-            const encryptedData = await encryptFileSym(srcStream, secret);
-            encryptedData.pipe(destStream);
-            destStream.on("finish", () => {
-                console.log("Done")
-                resolve();
-            });
-            destStream.on("error", (err) => {
-                console.log(err)
-                reject(err);
-            });
-        });
-        keyWriteStream.on("error", (err) => {
-            console.log(err)
-            reject(err);
-        });
-    });
+    let encryptedSecret = await encryptSecretWithPublic(secret, publicKey);
+    keyWriteStream.write(encryptedSecret);
+    const encryptedData = await encryptFileSym(srcStream, secret);
+    encryptedData.pipe(destStream);
 }
 
 export async function decryptStreamToNewStream(

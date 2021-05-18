@@ -1,4 +1,4 @@
 {
     "testEnvironment": "node",
-    "timeout": "10"
+    "setupFilesAfterEnv": ["./jest.setup.js"]
 }

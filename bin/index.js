@@ -143,31 +143,10 @@ function getPrivateSecretByName(secretName) {
 exports.getPrivateSecretByName = getPrivateSecretByName;
 function encryptStreamToNewStream(srcStream, destStream, keyWriteStream, secret, publicKey) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(function (resolve, reject) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let encryptedSecret = yield encryptSecretWithPublic(secret, publicKey);
-                keyWriteStream.write(encryptedSecret);
-                keyWriteStream.on("finish", function () {
-                    return __awaiter(this, void 0, void 0, function* () {
-                        //@ts-ignore
-                        const encryptedData = yield encryptFileSym(srcStream, secret);
-                        encryptedData.pipe(destStream);
-                        destStream.on("finish", () => {
-                            console.log("Done");
-                            resolve();
-                        });
-                        destStream.on("error", (err) => {
-                            console.log(err);
-                            reject(err);
-                        });
-                    });
-                });
-                keyWriteStream.on("error", (err) => {
-                    console.log(err);
-                    reject(err);
-                });
-            });
-        });
+        let encryptedSecret = yield encryptSecretWithPublic(secret, publicKey);
+        keyWriteStream.write(encryptedSecret);
+        const encryptedData = yield encryptFileSym(srcStream, secret);
+        encryptedData.pipe(destStream);
     });
 }
 exports.encryptStreamToNewStream = encryptStreamToNewStream;
