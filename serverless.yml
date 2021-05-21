@@ -1,0 +1,18 @@
+service: test
+provider:
+    name: aws
+    runtime: nodejs14.x
+    stage: dev
+    region: ca-central-1
+    memorySize: 128
+functions:
+    hello:
+        handler: bin/index.handler
+        timeout: 30
+        events:
+          - s3:
+              bucket: ericmarcantoniobucket2
+              event: s3:ObjectCreated:*
+              rules:
+                - suffix: .enc
+              

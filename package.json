@@ -5,11 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "env-cmd ts-node src/index.ts",
-    "key:create:private": "env-cmd aws secretsmanager create-secret --name private-key8 --secret-binary fileb://test/keys/private.asc --region ca-central-1",
-    "key:create:public": "env-cmd aws secretsmanager create-secret --name public-key8 --secret-binary fileb://test/keys/public.asc --region ca-central-1",
-    "test:GetSecret": "env-cmd jest test/ --detectOpenHandles",
-    "test:noJest": "env-cmd node test/jest_is_shit.js",
-    "build": "tsc"
+    "build": "tsc",
+    "deploy": "npm run build && env-cmd serverless deploy"
   },
   "keywords": [],
   "author": "",
